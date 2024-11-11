@@ -37,15 +37,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 " (Username varchar(50) PRIMARY KEY, " +
                 "Fname varchar(50), " +
                 "Lname varchar(50), " +
-                "Email varchar(50), " +
-                "PhoneNum varchar(25), " +
                 "Age integer, " +
-                "Birthday date;");
+                "Birthday date);");
         db.execSQL("CREATE TABLE " +
                 FRIENDS_TABLE_NAME +
-                " (MajorId integer PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "MajorName varchar(50), " +
-                "MajorPrefix varchar(50));");
+                " (FriendID integer PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                " Fname varchar(50), " +
+                " Lname varchar(50), " +
+                " Email varchar(50), " +
+                " Age integer, " +
+                " "));
     }
 
     @Override
