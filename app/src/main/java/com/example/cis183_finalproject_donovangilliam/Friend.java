@@ -14,9 +14,17 @@ public class Friend
     private int commMethod;
     private String tiedUser;
 
-    // Constructor
-    public Friend(int friendID, String fname, String lname, String email, int gender, int age, String birthday,
-                  String phoneNum, int closenessLevel, int commMethod, String tiedUser)
+    public Friend(int friendID,
+                  String fname,
+                  String lname,
+                  String email,
+                  int gender,
+                  int age,
+                  String birthday,
+                  String phoneNum,
+                  int closenessLevel,
+                  int commMethod,
+                  String tiedUser)
     {
         this.friendID = friendID;
         this.fname = fname;

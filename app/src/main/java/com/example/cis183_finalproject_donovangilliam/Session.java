@@ -5,9 +5,9 @@ public class Session
     //add more things here
     private static String loggedInUser;
 
-    public Session (String u)
+    public Session (String username)
     {
-        loggedInUser = u;
+        loggedInUser = username;
     }
 
     public static String getLoggedInUser()

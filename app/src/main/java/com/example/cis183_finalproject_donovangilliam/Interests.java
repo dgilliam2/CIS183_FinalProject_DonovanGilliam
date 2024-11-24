@@ -5,7 +5,6 @@ public class Interests
     private int interestID;
     private String interestName;
 
-    // Constructor
     public Interests(int interestID, String interestName)
     {
         this.interestID = interestID;
