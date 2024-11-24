@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FriendScreen">
+
+    <ListView
+        android:id="@+id/lv_v_fs_friendlist"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_v_fs_desc" />
+
+    <Button
+        android:id="@+id/btn_v_fs_addfriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="98dp"
+        android:layout_marginBottom="79dp"
+        android:text="Add New Friend"
+        app:layout_constraintBottom_toTopOf="@+id/tv_v_fs_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_v_fs_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap on Friend to manage or edit. \n Hold down on Friend to delete."
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/lv_v_fs_friendlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_v_fs_addfriend" />
+</androidx.constraintlayout.widget.ConstraintLayout>
