@@ -71,6 +71,14 @@ public class Friend
         this.email = email;
     }
 
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
     public int getAge() {
         return age;
     }
