@@ -13,6 +13,15 @@ public class Friend
     private int closenessLevel;
     private int commMethod;
     private String tiedUser;
+    // 0 - unmarked
+    // 1 - marked
+    private int isMarked;
+
+
+    public Friend()
+    {
+
+    }
 
     public Friend(int friendID,
                   String fname,
@@ -24,7 +33,8 @@ public class Friend
                   String phoneNum,
                   int closenessLevel,
                   int commMethod,
-                  String tiedUser)
+                  String tiedUser,
+                  int isMarked)
     {
         this.friendID = friendID;
         this.fname = fname;
@@ -37,6 +47,7 @@ public class Friend
         this.closenessLevel = closenessLevel;
         this.commMethod = commMethod;
         this.tiedUser = tiedUser;
+        this.isMarked = isMarked;
     }
 
     public int getFriendID() {
@@ -127,26 +138,34 @@ public class Friend
         this.tiedUser = tiedUser;
     }
 
+    public int isMarked() {
+        return isMarked;
+    }
+
+    public void setMarked(int marked) {
+        isMarked = marked;
+    }
+
     //redo this maybe
     public String closenessString(int i)
     {
-        if (i == 1)
+        if (i == 0)
         {
             return "Not Close";
         }
-        else if (i == 2)
+        else if (i == 1)
         {
             return "Acquainted";
         }
-        else if (i == 3)
+        else if (i == 2)
         {
             return "Friend";
         }
-        else if (i == 4)
+        else if (i == 3)
         {
             return "Close Friend";
         }
-        else if (i == 5)
+        else if (i == 4)
         {
             return "Best Friend";
         }

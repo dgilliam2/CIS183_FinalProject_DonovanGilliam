@@ -7,14 +7,21 @@ public class User
     private String lname;
     private int age;
     private String birthday;
+    private String lastlogin;
 
-    public User(String username, String fname, String lname, int age, String birthday)
+    public User()
+    {
+
+    }
+
+    public User(String username, String fname, String lname, int age, String birthday, String lastlogin)
     {
         this.username = username;
         this.fname = fname;
         this.lname = lname;
         this.age = age;
         this.birthday = birthday;
+        this.lastlogin = lastlogin;
     }
 
     public String getUsername() {
@@ -55,5 +62,13 @@ public class User
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+    }
+
+    public String getLastlogin() {
+        return lastlogin;
+    }
+
+    public void setLastlogin(String lastlogin) {
+        this.lastlogin = lastlogin;
     }
 }

@@ -1,11 +1,11 @@
 package com.example.cis183_finalproject_donovangilliam;
 
-public class Interests
+public class Interest
 {
     private int interestID;
     private String interestName;
 
-    public Interests(int interestID, String interestName)
+    public Interest(int interestID, String interestName)
     {
         this.interestID = interestID;
         this.interestName = interestName;

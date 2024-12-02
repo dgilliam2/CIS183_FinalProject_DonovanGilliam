@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ public class FriendListAdapter extends BaseAdapter
     {
         context = c;
         friend_list = fl;
-        dbhelper = new DatabaseHelper(context);
     }
 
     @Override
@@ -46,6 +46,13 @@ public class FriendListAdapter extends BaseAdapter
             view = mInflater.inflate(R.layout.custom_cell_friend_list, null);
         }
 
+        dbhelper = new DatabaseHelper(context);
+        Friend friend = friend_list.get(i);
+
+        ArrayList<String> commMethodsList = dbhelper.getCommMethodsByID(friend.getFriendID());
+        // concat comm methods into a string
+        String commMethods = String.join(", ", commMethodsList);
+
         TextView name = view.findViewById(R.id.tv_v_cc_f_name);
         TextView email = view.findViewById(R.id.tv_v_cc_f_email);
         TextView age = view.findViewById(R.id.tv_v_cc_f_age);
@@ -54,17 +61,44 @@ public class FriendListAdapter extends BaseAdapter
         TextView closeness = view.findViewById(R.id.tv_v_cc_f_closeness);
         TextView comms = view.findViewById(R.id.tv_v_cc_f_comms);
 
-        Friend friend = friend_list.get(i);
-        ArrayList<String> commMethodsList = dbhelper.getCommMethodsByID(friend.getFriendID());
-        String commMethods = String.join(", ", commMethodsList);
+        ImageView male = view.findViewById(R.id.iv_v_cc_male);
+        ImageView female = view.findViewById(R.id.iv_v_cc_female);
+        ImageView other = view.findViewById(R.id.iv_v_cc_other);
+        ImageView mark = view.findViewById(R.id.iv_v_cc_mark);
+
+
+        male.setVisibility(View.INVISIBLE);
+        female.setVisibility(View.INVISIBLE);
+        other.setVisibility(View.INVISIBLE);
+        mark.setVisibility(View.INVISIBLE);
 
         name.setText("Name: "+ friend.getFname() + " " + friend.getLname());
         email.setText("Email: " + friend.getEmail());
+        if (friend.getGender() == 0)
+        {
+            male.setVisibility(View.VISIBLE);
+        }
+        else if (friend.getGender() == 1)
+        {
+            female.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            other.setVisibility(View.VISIBLE);
+        }
         age.setText("Age: " + friend.getAge());
         birthday.setText("DOB: " + friend.getBirthday());
         phone.setText("Phone #: " + friend.getPhoneNum());
         closeness.setText("Closeness: " + friend.closenessString(friend.getClosenessLevel()));
         comms.setText("Communication: " + commMethods);
+        if (friend.isMarked() == 1)
+        {
+            mark.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mark.setVisibility(View.INVISIBLE);
+        }
         return view;
     }
 }
