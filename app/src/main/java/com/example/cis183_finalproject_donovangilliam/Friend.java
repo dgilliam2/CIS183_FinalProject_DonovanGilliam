@@ -11,7 +11,6 @@ public class Friend
     private String birthday;
     private String phoneNum;
     private int closenessLevel;
-    private int commMethod;
     private String tiedUser;
     // 0 - unmarked
     // 1 - marked
@@ -32,7 +31,6 @@ public class Friend
                   String birthday,
                   String phoneNum,
                   int closenessLevel,
-                  int commMethod,
                   String tiedUser,
                   int isMarked)
     {
@@ -45,7 +43,6 @@ public class Friend
         this.birthday = birthday;
         this.phoneNum = phoneNum;
         this.closenessLevel = closenessLevel;
-        this.commMethod = commMethod;
         this.tiedUser = tiedUser;
         this.isMarked = isMarked;
     }
@@ -120,14 +117,6 @@ public class Friend
 
     public void setClosenessLevel(int closenessLevel) {
         this.closenessLevel = closenessLevel;
-    }
-
-    public int getCommMethod() {
-        return commMethod;
-    }
-
-    public void setCommMethod(int commMethod) {
-        this.commMethod = commMethod;
     }
 
     public String getTiedUser() {

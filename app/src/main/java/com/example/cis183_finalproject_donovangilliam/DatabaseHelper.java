@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COMM_TYPES_TABLE_NAME = "CommTypes";
 
     // put version up here too so i can change it easier
-    private static final int DATABASE_VERSION = 23;
+    private static final int DATABASE_VERSION = 24;
 
     public DatabaseHelper(Context c) {
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -61,7 +61,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Birthday varchar(50), " +
                 "PhoneNum varchar(50), " +
                 "ClosenessLevel integer NOT NULL, " +
-                "CommMethod integer, " +
                 "TiedUser varchar(50), " +
                 "IsMarked integer," +
                 "FOREIGN KEY (TiedUser) REFERENCES " +
@@ -160,9 +159,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Birthday, " +
                 "PhoneNum, " +
                 "ClosenessLevel, " +
-                "CommMethod, " +
                 "TiedUser, " +
-                "IsMarked) VALUES ('Emile', 'Smile', 0, 'emiles@example.com', 22, '6/20/2002', '1-734-048-1732', 4, 2, 'jmahn2', 0);");
+                "IsMarked) VALUES ('Emile', 'Smile', 0, 'emiles@example.com', 22, '6/20/2002', '1-734-048-1732', 4, 'jmahn2', 0);");
         db.execSQL("INSERT INTO " + FRIENDS_TABLE_NAME +
                 " (Fname, " +
                 "Lname, " +
@@ -172,9 +170,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Birthday, " +
                 "PhoneNum, " +
                 "ClosenessLevel, " +
-                "CommMethod, " +
                 "TiedUser, " +
-                "IsMarked) VALUES ('Elle', 'Vaan', 1, 'ellev@example.com', 23, '3/22/2001', '1-732-073-1331', 0, 1, 'jmahn2', 1);");
+                "IsMarked) VALUES ('Elle', 'Vaan', 1, 'ellev@example.com', 23, '3/22/2001', '1-732-073-1331', 0, 'jmahn2', 1);");
         db.execSQL("INSERT INTO " + FRIENDS_TABLE_NAME +
                 " (Fname, " +
                 "Lname, " +
@@ -184,9 +181,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Birthday, " +
                 "PhoneNum, " +
                 "ClosenessLevel, " +
-                "CommMethod, " +
                 "TiedUser, " +
-                "IsMarked) VALUES ('Ayame', 'Oso', 2, 'ayso@example.com', 19, '2/17/2005', '1-732-023-1323', 2, 1, 'ioi59', 1);");
+                "IsMarked) VALUES ('Ayame', 'Oso', 2, 'ayso@example.com', 19, '2/17/2005', '1-732-023-1323', 2, 'ioi59', 1);");
         db.execSQL("INSERT INTO " + FRIENDS_TABLE_NAME +
                 " (Fname, " +
                 "Lname, " +
@@ -196,9 +192,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Birthday, " +
                 "PhoneNum, " +
                 "ClosenessLevel, " +
-                "CommMethod, " +
                 "TiedUser, " +
-                "IsMarked) VALUES ('Larry', 'Boiud', 0, 'lbud@example.com', 20, '6/26/2004', '1-712-273-1334', 3, 2, 'ioi59', 1);");
+                "IsMarked) VALUES ('Larry', 'Boiud', 0, 'lbud@example.com', 20, '6/26/2004', '1-712-273-1334', 3, 'ioi59', 1);");
 
         db.execSQL("INSERT INTO " + INTERESTS_TABLE_NAME +
                 " (InterestName) VALUES ('Music');");
@@ -274,10 +269,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String birthday = cursor.getString(6);
                 String phoneNum = cursor.getString(7);
                 int closenessLevel = cursor.getInt(8);
-                int commMethod = cursor.getInt(9);
-                String tiedUser = cursor.getString(10);
-                int isMarked = cursor.getInt(11);
-                Friend friend = new Friend(friendID, fname, lname, email, gender, age, birthday, phoneNum, closenessLevel, commMethod, tiedUser, isMarked);
+                String tiedUser = cursor.getString(9);
+                int isMarked = cursor.getInt(10);
+                Friend friend = new Friend(friendID, fname, lname, email, gender, age, birthday, phoneNum, closenessLevel,tiedUser, isMarked);
                 al.add(friend);
                 cursor.moveToNext();
             }
@@ -300,7 +294,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + id + ";";
         Cursor cursor = db.rawQuery(select, null);
 
-        if (cursor != null) {
+        if (cursor != null)
+        {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 String methodName = cursor.getString(0);
@@ -320,7 +315,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
         Cursor cursor = db.rawQuery(select, null);
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
             db.close();
             return true;
         } else {
@@ -387,6 +383,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public int getMostRecentFriendIDForUser(String username)
+    {
+        int recentID = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String select = "SELECT FriendID FROM " + FRIENDS_TABLE_NAME + "WHERE TiedUser ='" + username + "'";
+
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            recentID = cursor.getInt(0);
+            cursor.close();
+        }
+
+        db.close();
+        return recentID;
+
+    }
+
     // DATA MANIP
     public void addUserToDB(User user)
     {
@@ -416,7 +432,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("Birthday", friend.getBirthday());
         cv.put("PhoneNum", friend.getPhoneNum());
         cv.put("ClosenessLevel", friend.getClosenessLevel());
-        cv.put("CommMethod", friend.getCommMethod());
         cv.put("TiedUser", friend.getTiedUser());
         cv.put("IsMarked", friend.isMarked());
         db.insert(FRIENDS_TABLE_NAME, null, cv);
@@ -473,7 +488,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("Birthday", friend.getBirthday());
         cv.put("PhoneNum", friend.getPhoneNum());
         cv.put("ClosenessLevel", friend.getClosenessLevel());
-        cv.put("CommMethod", friend.getCommMethod());
         cv.put("IsMarked", friend.isMarked());
 
         db.update(FRIENDS_TABLE_NAME, cv, "FriendID = ?", new String[]{String.valueOf(friend.getFriendID())});
@@ -541,10 +555,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String birthday = cursor.getString(6);
                 String phoneNum = cursor.getString(7);
                 int closenessLevel = cursor.getInt(8);
-                int commMethod = cursor.getInt(9);
-                String tiedUser = cursor.getString(10);
-                int isMarked = cursor.getInt(11);
-                Friend friend = new Friend(friendID, fname, lname, email, gender, age, birthday, phoneNum, closenessLevel, commMethod, tiedUser, isMarked);
+                String tiedUser = cursor.getString(9);
+                int isMarked = cursor.getInt(10);
+                Friend friend = new Friend(friendID, fname, lname, email, gender, age, birthday, phoneNum, closenessLevel,tiedUser, isMarked);
                 al.add(friend);
                 cursor.moveToNext();
             }
