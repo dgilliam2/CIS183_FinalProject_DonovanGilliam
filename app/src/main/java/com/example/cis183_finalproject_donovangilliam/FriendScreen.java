@@ -22,10 +22,12 @@ import java.util.ArrayList;
 
 public class FriendScreen extends AppCompatActivity
 {
+    ArrayList<Friend> friend_list = new ArrayList<>();
+    DatabaseHelper dbhelper;
+
     Button btn_j_fs_addfriend;
     Button btn_j_fs_sortfriend;
     Button btn_j_fs_home;
-
 
     ListView lv_j_fs_friendlist;
 
@@ -33,8 +35,6 @@ public class FriendScreen extends AppCompatActivity
     Intent intent_j_fs_addfriend;
     Intent intent_j_fs_managefriend;
 
-    DatabaseHelper dbhelper;
-    ArrayList<Friend> friend_list = new ArrayList<>();
     FriendListAdapter adapter = new FriendListAdapter(this, friend_list);
 
     
@@ -155,6 +155,19 @@ public class FriendScreen extends AppCompatActivity
         View view = getLayoutInflater().inflate(R.layout.custom_cell_sort_alert_dialog, null);
         builder.setView(view);
 
+        ArrayList<String> genderList = new ArrayList<>();
+        genderList.add("Male");
+        genderList.add("Female");
+        genderList.add("Other");
+
+        ArrayList<String> closenessList = new ArrayList<>();
+        closenessList.add("Not Close");
+        closenessList.add("Acquainted");
+        closenessList.add("Friend");
+        closenessList.add("Close Friend");
+        closenessList.add("Best Friend");
+
+
         CheckBox cb_j_sf_fname = view.findViewById(R.id.cb_v_sf_fname);
         CheckBox cb_j_sf_lname = view.findViewById(R.id.cb_v_sf_lname);
         CheckBox cb_j_sf_gender = view.findViewById(R.id.cb_v_sf_gender);
@@ -167,16 +180,6 @@ public class FriendScreen extends AppCompatActivity
         Spinner spn_j_sf_gender = view.findViewById(R.id.spn_v_sf_gender);
         Spinner spn_j_sf_closeness = view.findViewById(R.id.spn_v_sf_closeness);
 
-        ArrayList<String> genderList = new ArrayList<>();
-        genderList.add("Male");
-        genderList.add("Female");
-        genderList.add("Other");
-        ArrayList<String> closenessList = new ArrayList<>();
-        closenessList.add("Not Close");
-        closenessList.add("Acquainted");
-        closenessList.add("Friend");
-        closenessList.add("Close Friend");
-        closenessList.add("Best Friend");
 
 
 
