@@ -300,7 +300,7 @@ public class ManageFriendScreen extends AppCompatActivity {
         interestViewBuilder.show();
     }
 
-
+// note to self: take breaks and you can actually figure out why you're stupid
     private void commMethodView() {
         ArrayList<String> comm_type_list = new ArrayList<>();
         dbhelper.fillCommTypeList(comm_type_list);
@@ -328,21 +328,33 @@ public class ManageFriendScreen extends AppCompatActivity {
         ArrayList<CommMethod> comm_method_list;
         comm_method_list = dbhelper.getCommMethodsByID(friendID);
 
-        //would implement setting dropdown, but not sure how to write query and running out of time
-
-        if (comm_method_list.size() > 0) {
+        if (comm_method_list.size() > 0)
+        {
             et_j_acm_comm1.setText(comm_method_list.get(0).getCommMethodName());
-        } else {
+            spn_j_acm_type1.setSelection(comm_method_list.get(0).getCommTypeID());
+        }
+        else
+        {
             et_j_acm_comm1.setText("");
         }
-        if (comm_method_list.size() > 1) {
+        if (comm_method_list.size() > 1)
+        {
             et_j_acm_comm2.setText(comm_method_list.get(1).getCommMethodName());
-        } else {
+            spn_j_acm_type2.setSelection(comm_method_list.get(1).getCommTypeID());
+
+        }
+        else
+        {
             et_j_acm_comm2.setText("");
         }
-        if (comm_method_list.size() > 2) {
+        if (comm_method_list.size() > 2)
+        {
             et_j_acm_comm3.setText(comm_method_list.get(2).getCommMethodName());
-        } else {
+            spn_j_acm_type3.setSelection(comm_method_list.get(2).getCommTypeID());
+
+        }
+        else
+        {
             et_j_acm_comm3.setText("");
         }
 
@@ -357,7 +369,7 @@ public class ManageFriendScreen extends AppCompatActivity {
                     {
                         CommMethod commMethod1 = new CommMethod(comm_method_list.get(0).getCommMethodID(),
                                 et_j_acm_comm1.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
+                                spn_j_acm_type1.getSelectedItemPosition()
                         );
                         dbhelper.updateCommMethodInDB(commMethod1);
                         dbhelper.updateFriendCommMethod(friendID, commMethod1);
@@ -365,7 +377,7 @@ public class ManageFriendScreen extends AppCompatActivity {
                     else
                     {
                         CommMethod commMethod1 = new CommMethod(et_j_acm_comm1.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
+                                spn_j_acm_type1.getSelectedItemPosition()
                         );
                         dbhelper.addCommMethodToDB(commMethod1);
                         dbhelper.addFriendCommMethod(friendID, commMethod1);
@@ -379,16 +391,14 @@ public class ManageFriendScreen extends AppCompatActivity {
 
                         CommMethod commMethod2 = new CommMethod(comm_method_list.get(1).getCommMethodID(),
                                 et_j_acm_comm2.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
-                        );
+                                spn_j_acm_type2.getSelectedItemPosition());
                         dbhelper.updateCommMethodInDB(commMethod2);
                         dbhelper.updateFriendCommMethod(friendID, commMethod2);
                     }
                     else
                     {
                         CommMethod commMethod2 = new CommMethod(et_j_acm_comm2.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
-                        );
+                                spn_j_acm_type2.getSelectedItemPosition());
                         dbhelper.addCommMethodToDB(commMethod2);
                         dbhelper.addFriendCommMethod(friendID, commMethod2);
                     }
@@ -400,7 +410,7 @@ public class ManageFriendScreen extends AppCompatActivity {
                     {
                         CommMethod commMethod3 = new CommMethod(comm_method_list.get(2).getCommMethodID(),
                                 et_j_acm_comm3.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
+                                spn_j_acm_type3.getSelectedItemPosition()
                         );
                         dbhelper.updateCommMethodInDB(commMethod3);
                         dbhelper.updateFriendCommMethod(friendID, commMethod3);
@@ -408,7 +418,7 @@ public class ManageFriendScreen extends AppCompatActivity {
                     else
                     {
                         CommMethod commMethod3 = new CommMethod(et_j_acm_comm3.getText().toString(),
-                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
+                                spn_j_acm_type3.getSelectedItemPosition()
                         );
                         dbhelper.addCommMethodToDB(commMethod3);
                         dbhelper.addFriendCommMethod(friendID, commMethod3);

@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COMM_TYPES_TABLE_NAME = "CommTypes";
 
     // put version up here too so i can change it easier
-    private static final int DATABASE_VERSION = 43;
+    private static final int DATABASE_VERSION = 46;
 
     public DatabaseHelper(Context c) {
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -503,6 +503,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return al;
     }
+
+//    public int getCommTypeByID(int commMethodID)
+//    {
+//        int commType = 0;
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String select = "SELECT CommTypeID FROM " + COMM_METHODS_TABLE_NAME +
+//                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
+//                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommTypeID = " +
+//                COMM_METHODS_TABLE_NAME
+//
+//        return commType;
+//    }
 
     public User getUserByUsername(String username)
     {
