@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COMM_TYPES_TABLE_NAME = "CommTypes";
 
     // put version up here too so i can change it easier
-    private static final int DATABASE_VERSION = 36;
+    private static final int DATABASE_VERSION = 38;
 
     public DatabaseHelper(Context c) {
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,7 +31,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Setup
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db)
+    {
+        // create dummy table for init
+        db.execSQL("CREATE TABLE Dummy (Dummy integer);");
+
         db.execSQL("CREATE TABLE " +
                 USERS_TABLE_NAME +
                 " (Username varchar(50) PRIMARY KEY, " +
@@ -101,7 +105,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase db, int i, int i1)
+    {
+        db.execSQL("DROP TABLE IF EXISTS Dummy;");
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIENDS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIEND_INTERESTS_TABLE_NAME + ";");
@@ -113,16 +119,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void initFunc() {
+    public void initFunc()
+    {
         // check the table count here so that it only initializes the db if both of these are empty
-        // used to prevent it from refilling if friends are deleted, since we won't allow users to be deleted
-        if (countRecordsFromTable(USERS_TABLE_NAME) == 0 && countRecordsFromTable(FRIENDS_TABLE_NAME) == 0) {
+        if (countRecordsFromTable("Dummy") == 0)
+        {
             initData();
         }
     }
 
-    private void initData() {
+    private void initData()
+    {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("INSERT INTO Dummy(Dummy) VALUES (1)");
 
         db.execSQL("INSERT INTO " + USERS_TABLE_NAME +
                 "(Username," +
@@ -225,23 +235,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int countRecordsFromTable(String tableName) {
+    public int countRecordsFromTable(String tableName)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, tableName);
         db.close();
         return numRows;
     }
 
-    public void fillFriendsList(String username, ArrayList<Friend> al) {
+    // Fills
+
+    public void fillFriendsList(String username, ArrayList<Friend> al)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String select = "SELECT * FROM " + FRIENDS_TABLE_NAME + " WHERE TiedUser = '" + username + "';";
         Cursor cursor = db.rawQuery(select, null);
         // clear to reset list per user
         al.clear();
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+        if (cursor != null && cursor.moveToFirst())
+        {
+            while (!cursor.isAfterLast())
+            {
                 int friendID = cursor.getInt(0);
                 String fname = cursor.getString(1);
                 String lname = cursor.getString(2);
@@ -279,9 +294,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String select = "SELECT * FROM " + COMM_TYPES_TABLE_NAME + ";";
         Cursor cursor = db.rawQuery(select, null);
         al.clear();
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+        if (cursor != null && cursor.moveToFirst())
+        {
+            while (!cursor.isAfterLast())
+            {
                 String commTypeName = cursor.getString(1);
                 al.add(commTypeName);
                 cursor.moveToNext();
@@ -344,9 +360,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues cv = new ContentValues();
         cv.put("LastLogin", currentDate);
+
         db.update(USERS_TABLE_NAME, cv, "Username = ?", new String[]{username});
         db.close();
     }
+
+    // Get Stuff
 
     public Boolean findUserInDB(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -374,9 +393,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " WHERE FriendID = " + friendID + ";";
         Cursor cursor = db.rawQuery(select, null);
 
-        if (cursor != null)
+        if (cursor != null && cursor.moveToFirst())
         {
-            cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 String interestName = cursor.getString(0);
                 Log.d("Interest: ", interestName + " FriendID: " + friendID);
@@ -399,16 +417,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " WHERE FriendID = " + friendID + ";";
         Cursor cursor = db.rawQuery(select, null);
 
-        if (cursor != null)
+        if (cursor != null && cursor.moveToFirst())
         {
-            cursor.moveToFirst();
+
             while (!cursor.isAfterLast())
             {
                 int interestID = cursor.getInt(0);
                 int friendIdFromDB = cursor.getInt(1);
                 String interestName = cursor.getString(2);
-
                 Interest interest = new Interest(interestID, friendIdFromDB, interestName);
+
                 al.add(interest);
                 cursor.moveToNext();
             }
@@ -433,10 +451,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + friendID + ";";
         Cursor cursor = db.rawQuery(select, null);
 
-        if (cursor != null)
+        if (cursor != null && cursor.moveToFirst())
         {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+            while (!cursor.isAfterLast())
+            {
                 String methodName = cursor.getString(0);
                 al.add(methodName);
                 cursor.moveToNext();
@@ -484,6 +502,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public User getUserByUsername(String username)
     {
         SQLiteDatabase db = this.getReadableDatabase();
+        //empty user so return works
         User user = new User();
         String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
         Cursor cursor = db.rawQuery(select, null);
@@ -547,6 +566,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return recentID;
     }
 
+    public int getNumOfMarkedFriends(String username)
+    {
+        int numMarked = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String select = "SELECT COUNT(*) FROM " + FRIENDS_TABLE_NAME +
+                " WHERE TiedUser = '" + username + "' AND IsMarked = 1;";
+
+        Cursor cursor = db.rawQuery(select, null);
+        if (cursor != null && cursor.moveToFirst())
+        {
+            numMarked = cursor.getInt(0);
+            cursor.close();
+        }
+
+        db.close();
+        return numMarked;
+    }
+
+    // Add
     public void addUserToDB(User user)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -629,6 +667,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Update
     public void updateUserInDB(User user)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -698,6 +737,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        db.close();
 //    }
 
+    // Delete
+
     // this also removes all of a user's friends
     public void removeUserFromDB(String username)
     {
@@ -722,9 +763,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(statement, null);
 
         al.clear();
-        if (cursor != null)
+        if (cursor != null && cursor.moveToFirst())
         {
-            cursor.moveToFirst();
             while (!cursor.isAfterLast())
             {
                 int friendID = cursor.getInt(0);

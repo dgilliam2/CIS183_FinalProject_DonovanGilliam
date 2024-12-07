@@ -340,10 +340,12 @@ public class FriendScreen extends AppCompatActivity
 
     private void loginLapseNotification()
     {
+        int markedFriends = dbhelper.getNumOfMarkedFriends(Session.getLoggedInUser());
         AlertDialog.Builder loginLapseBuilder = new AlertDialog.Builder(FriendScreen.this);
         loginLapseBuilder.setTitle("It's been a while!");
-        loginLapseBuilder.setMessage("Hey there! It's been 3 days since you've last logged in. " +
-                "Why not talk to some of the friends you've marked?");
+        loginLapseBuilder.setMessage("Hey there! It's been 3 days since you've last logged in.\n" +
+                "Why not talk to some of the friends you've marked?\n" +
+                "You currently have " + markedFriends + " marked friends.");
         loginLapseBuilder.setNegativeButton("Sure!", null);
         loginLapseBuilder.show();
     }
