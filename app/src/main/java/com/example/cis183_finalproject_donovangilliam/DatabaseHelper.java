@@ -431,6 +431,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // return as arraylist instead of straight string so we can manipulate stuff easier later if needed
+// this gets all of the Comm Method Names for a friend by joining the two Comm tables together. 
     public ArrayList<String> getCommMethodNamesByID(int friendID)
     {
         ArrayList<String> al = new ArrayList<>();
@@ -460,6 +461,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return al;
     }
 
+
+  // was going to do similar to above but couldn't get this to work right
 //    public ArrayList<CommMethod> getCommMethodsByID(int friendID)
 //    {
 //        ArrayList<CommMethod> al = new ArrayList<>();
