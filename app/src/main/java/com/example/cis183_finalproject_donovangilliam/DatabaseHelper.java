@@ -31,7 +31,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Setup
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) 
+    {
         db.execSQL("CREATE TABLE " +
                 USERS_TABLE_NAME +
                 " (Username varchar(50) PRIMARY KEY, " +
@@ -101,7 +102,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) 
+    {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIENDS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIEND_INTERESTS_TABLE_NAME + ";");
@@ -113,7 +115,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void initFunc() {
+    public void initFunc() 
+    {
         // check the table count here so that it only initializes the db if both of these are empty
         // used to prevent it from refilling if friends are deleted, since we won't allow users to be deleted
         if (countRecordsFromTable(USERS_TABLE_NAME) == 0 && countRecordsFromTable(FRIENDS_TABLE_NAME) == 0) {
@@ -121,7 +124,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void initData() {
+    private void initData() 
+    {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.execSQL("INSERT INTO " + USERS_TABLE_NAME +
@@ -225,23 +229,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int countRecordsFromTable(String tableName) {
+    public int countRecordsFromTable(String tableName)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, tableName);
         db.close();
         return numRows;
     }
 
-    public void fillFriendsList(String username, ArrayList<Friend> al) {
+    public void fillFriendsList(String username, ArrayList<Friend> al)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String select = "SELECT * FROM " + FRIENDS_TABLE_NAME + " WHERE TiedUser = '" + username + "';";
         Cursor cursor = db.rawQuery(select, null);
         // clear to reset list per user
         al.clear();
-        if (cursor != null) {
+        if (cursor != null) 
+        {
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+            while (!cursor.isAfterLast())
+                {
                 int friendID = cursor.getInt(0);
                 String fname = cursor.getString(1);
                 String lname = cursor.getString(2);
@@ -348,7 +356,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Boolean findUserInDB(String username) {
+    public Boolean findUserInDB(String username)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
@@ -364,7 +373,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<String> getInterestNamesByID(int friendID) {
+    public ArrayList<String> getInterestNamesByID(int friendID) 
+    {
         ArrayList<String> al = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -377,7 +387,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null)
         {
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+            while (!cursor.isAfterLast()) 
+            {
                 String interestName = cursor.getString(0);
                 Log.d("Interest: ", interestName + " FriendID: " + friendID);
                 al.add(interestName);
@@ -389,7 +400,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return al;
     }
 
-    public ArrayList<Interest> getInterestsByID(int friendID) {
+    public ArrayList<Interest> getInterestsByID(int friendID)
+    {
         ArrayList<Interest> al = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
