@@ -300,9 +300,7 @@ public class ManageFriendScreen extends AppCompatActivity {
         interestViewBuilder.show();
     }
 
-    // Could not figure out how to get this to work.
-    // It was just updating all of the comm methods with the last comm method entered.
-    // Ran out of time to do this. This is one of the last things I worked on.
+
     private void commMethodView() {
         ArrayList<String> comm_type_list = new ArrayList<>();
         dbhelper.fillCommTypeList(comm_type_list);
