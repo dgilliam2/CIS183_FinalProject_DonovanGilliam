@@ -20,7 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-//this was a pain in the ass
+// this was a pain in the ass
 public class FriendScreen extends AppCompatActivity
 {
     ArrayList<Friend> friend_list = new ArrayList<>();

@@ -48,12 +48,12 @@ public class FriendListAdapter extends BaseAdapter
         dbhelper = new DatabaseHelper(context);
         Friend friend = friend_list.get(i);
 
-        ArrayList<String> commMethodsList = dbhelper.getCommMethodNamesByID(friend.getFriendID());
-        ArrayList<String> interestsList = dbhelper.getInterestNamesByID(friend.getFriendID());
+        ArrayList<String> comm_methods_list = dbhelper.getCommMethodNamesByID(friend.getFriendID());
+        ArrayList<String> interests_list = dbhelper.getInterestNamesByID(friend.getFriendID());
 
         // concat comm methods into a string
-        String commMethods = String.join(", ", commMethodsList);
-        String interestsString = String.join(", ", interestsList);
+        String commMethods = String.join(", ", comm_methods_list);
+        String interestsString = String.join(", ", interests_list);
 
 
         TextView name = view.findViewById(R.id.tv_v_cc_f_name);
@@ -94,8 +94,22 @@ public class FriendListAdapter extends BaseAdapter
         birthday.setText("DOB: " + friend.getBirthday());
         phone.setText("Phone #: " + friend.getPhoneNum());
         closeness.setText("Closeness: " + friend.closenessString(friend.getClosenessLevel()));
-        comms.setText("Communication: " + commMethods);
-        interests.setText("Interests: " + interestsString);
+        if (!interests_list.isEmpty())
+        {
+            interests.setText("Interests: " + interestsString);
+        }
+        else
+        {
+            interests.setText("Interests: None");
+
+        }
+        if (!comm_methods_list.isEmpty()) {
+            comms.setText("Communication: " + commMethods);
+        }
+        else
+        {
+            comms.setText("Communication: None");
+        }
 
         if (friend.isMarked() == 1)
         {
