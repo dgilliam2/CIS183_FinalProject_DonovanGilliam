@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COMM_TYPES_TABLE_NAME = "CommTypes";
 
     // put version up here too so i can change it easier
-    private static final int DATABASE_VERSION = 38;
+    private static final int DATABASE_VERSION = 43;
 
     public DatabaseHelper(Context c) {
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -470,39 +470,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-  // was going to do similar to above but couldn't get this to work right
-//    public ArrayList<CommMethod> getCommMethodsByID(int friendID)
-//    {
-//        ArrayList<CommMethod> al = new ArrayList<>();
-//
-//        SQLiteDatabase db = this.getReadableDatabase();
-//
-//        String select = "SELECT * " +
-//                "FROM " + COMM_METHODS_TABLE_NAME +
-//                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
-//                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommMethodID = " +
-//                COMM_METHODS_TABLE_NAME + ".CommMethodID " +
-//                "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + friendID + ";";
-//        Cursor cursor = db.rawQuery(select, null);
-//
-//        if (cursor != null)
-//        {
-//            cursor.moveToFirst();
-//            while (!cursor.isAfterLast()) {
-//                int commMethodID = cursor.getInt(0);
-//                String methodName = cursor.getString(1);
-//                int commTypeID = cursor.getInt(2);
-//
-//                CommMethod commMethod = new CommMethod(commMethodID, methodName, commTypeID);
-//                al.add(commMethod);
-//                cursor.moveToNext();
-//            }
-//            cursor.close();
-//        }
-//        db.close();
-//
-//        return al;
-//    }
+    public ArrayList<CommMethod> getCommMethodsByID(int friendID)
+    {
+        ArrayList<CommMethod> al = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String select = "SELECT * " +
+                "FROM " + COMM_METHODS_TABLE_NAME +
+                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
+                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommMethodID = " +
+                COMM_METHODS_TABLE_NAME + ".CommMethodID " +
+                "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + friendID + ";";
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                int commMethodID = cursor.getInt(0);
+                String methodName = cursor.getString(1);
+                int commTypeID = cursor.getInt(2);
+
+                CommMethod commMethod = new CommMethod(commMethodID, methodName, commTypeID);
+                al.add(commMethod);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        db.close();
+
+        return al;
+    }
 
     public User getUserByUsername(String username)
     {
@@ -718,30 +718,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-//    public void updateCommMethodInDB(CommMethod commMethod)
-//    {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues cv = new ContentValues();
-//
-//        cv.put("CommMethodName", commMethod.getCommMethodName());
-//        cv.put("CommTypeID", commMethod.getCommTypeID());
-//
-//        db.update(COMM_METHODS_TABLE_NAME, cv, "CommMethodID = ?", new String[]{String.valueOf(commMethod.getCommMethodID())});
-//        db.close();
-//    }
+    public void updateCommMethodInDB(CommMethod commMethod)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put("CommMethodName", commMethod.getCommMethodName());
+        cv.put("CommTypeID", commMethod.getCommTypeID());
+
+        db.update(COMM_METHODS_TABLE_NAME, cv, "CommMethodID = ?", new String[]{String.valueOf(commMethod.getCommMethodID())});
+        db.close();
+    }
 
 
-//    public void updateFriendCommMethod(int friendID, CommMethod commMethod)
-//    {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues cv = new ContentValues();
-//        cv.put("CommMethodID", commMethod.getCommMethodID());
-//
-//        db.update(FRIEND_COMM_METHODS_TABLE_NAME, cv,
-//                "FriendCommID = ? AND CommMethodID = ?",
-//                new String[]{String.valueOf(friendID), String.valueOf(commMethod.getCommMethodID())});
-//        db.close();
-//    }
+    public void updateFriendCommMethod(int friendID, CommMethod commMethod)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("CommMethodID", commMethod.getCommMethodID());
+        cv.put("FriendCommID", friendID);
+        db.update(FRIEND_COMM_METHODS_TABLE_NAME, cv,
+                "FriendCommID = ? AND CommMethodID = ?",
+                new String[]{String.valueOf(friendID), String.valueOf(commMethod.getCommMethodID())});
+        db.close();
+    }
 
     // Delete
 

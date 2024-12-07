@@ -44,8 +44,7 @@ public class ManageFriendScreen extends AppCompatActivity {
     private Friend passedFriend;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_manage_friend_screen);
@@ -86,8 +85,7 @@ public class ManageFriendScreen extends AppCompatActivity {
         intent_j_mf_friendscreen = new Intent(ManageFriendScreen.this, FriendScreen.class);
         Intent cameFrom = getIntent();
 
-        if (cameFrom.getSerializableExtra("PassedFriend") != null)
-        {
+        if (cameFrom.getSerializableExtra("PassedFriend") != null) {
             passedFriend = (Friend) cameFrom.getSerializableExtra("PassedFriend");
 
             et_j_mf_fname.setText(passedFriend.getFname());
@@ -99,14 +97,11 @@ public class ManageFriendScreen extends AppCompatActivity {
 
             Date birthday;
             Calendar calendar = Calendar.getInstance();
-            try
-            {
+            try {
                 birthday = sdf.parse(passedFriend.getBirthday());
                 calendar.setTime(birthday);
                 dp_j_mf_datepicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-            }
-            catch (ParseException e)
-            {
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
 
@@ -123,34 +118,27 @@ public class ManageFriendScreen extends AppCompatActivity {
         }
     }
 
-    private void confirmEditListener()
-    {
-        btn_j_mf_confirm.setOnClickListener(new View.OnClickListener()
-        {
+    private void confirmEditListener() {
+        btn_j_mf_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 confirmEditPrompt();
             }
         });
     }
 
-    private void confirmEditPrompt()
-    {
+    private void confirmEditPrompt() {
         AlertDialog.Builder editFriendBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
         editFriendBuilder.setTitle("Confirm Edit");
         editFriendBuilder.setMessage("Are you sure you would like to update this friend?");
         editFriendBuilder.setNegativeButton("No", null);
-        editFriendBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
-        {
+        editFriendBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
+            public void onClick(DialogInterface dialogInterface, int i) {
                 if (!et_j_mf_fname.getText().toString().isEmpty()
                         && !et_j_mf_lname.getText().toString().isEmpty()
                         && !et_j_mf_email.getText().toString().isEmpty()
-                        && !et_j_mf_phonenum.getText().toString().isEmpty())
-                {
+                        && !et_j_mf_phonenum.getText().toString().isEmpty()) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(dp_j_mf_datepicker.getYear(),
                             dp_j_mf_datepicker.getMonth(),
@@ -183,12 +171,33 @@ public class ManageFriendScreen extends AppCompatActivity {
         editFriendBuilder.show();
     }
 
-    private void interestPrompt()
-    {
+    private void interestPrompt() {
         AlertDialog.Builder addInterestBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
         addInterestBuilder.setTitle("Update Interests?");
         addInterestBuilder.setMessage("Friend updated. Would you like to update interests for this friend?");
-        addInterestBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        addInterestBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                //startActivity(intent_j_mf_friendscreen);
+                commMethodPrompt();
+            }
+        });
+        addInterestBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                editInterestView();
+            }
+        });
+        addInterestBuilder.show();
+    }
+
+    private void commMethodPrompt()
+    {
+        AlertDialog.Builder addCommsBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
+        addCommsBuilder.setTitle("Update Communication Methods?");
+        addCommsBuilder.setMessage("Would you like to update communication methods for this friend?");
+        addCommsBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
@@ -196,36 +205,18 @@ public class ManageFriendScreen extends AppCompatActivity {
                 startActivity(intent_j_mf_friendscreen);
             }
         });
-        addInterestBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+        addCommsBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
-                editInterestView();
+                commMethodView();
             }
         });
-        addInterestBuilder.show();
+        addCommsBuilder.show();
     }
 
-//    private void commMethodPrompt()
-//    {
-//        AlertDialog.Builder addCommsBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
-//        addCommsBuilder.setTitle("Update Communication Methods?");
-//        addCommsBuilder.setMessage("Would you like to update communication methods for this friend?");
-//        addCommsBuilder.setNegativeButton("No", null);
-//        addCommsBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i)
-//            {
-//                commMethodView();
-//            }
-//        });
-//        addCommsBuilder.show();
-//    }
-
-    private void editInterestView()
-    {
+    private void editInterestView() {
         AlertDialog.Builder interestViewBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
         View view = getLayoutInflater().inflate(R.layout.custom_cell_add_interests_dialog, null);
 
@@ -241,28 +232,19 @@ public class ManageFriendScreen extends AppCompatActivity {
         interest_list = dbhelper.getInterestsByID(friendID);
 
         // redo this maybe, clunky but works, idk
-        if (interest_list.size() > 0)
-        {
+        if (interest_list.size() > 0) {
             et_j_aid_interest1.setText(interest_list.get(0).getInterestName());
-        }
-        else
-        {
+        } else {
             et_j_aid_interest1.setText("");
         }
-        if (interest_list.size() > 1)
-        {
+        if (interest_list.size() > 1) {
             et_j_aid_interest2.setText(interest_list.get(1).getInterestName());
-        }
-        else
-        {
+        } else {
             et_j_aid_interest2.setText("");
         }
-        if (interest_list.size() > 2)
-        {
+        if (interest_list.size() > 2) {
             et_j_aid_interest3.setText(interest_list.get(2).getInterestName());
-        }
-        else
-        {
+        } else {
             et_j_aid_interest3.setText("");
         }
 
@@ -270,59 +252,47 @@ public class ManageFriendScreen extends AppCompatActivity {
 
         interestViewBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                if (!et_j_aid_interest1.getText().toString().isEmpty())
-                {
-                    if (interest_list.size() > 0)
-                    {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (!et_j_aid_interest1.getText().toString().isEmpty()) {
+                    if (interest_list.size() > 0) {
                         Interest interest1 = new Interest(interest_list.get(0).getInterestID(),
                                 friendID,
                                 et_j_aid_interest1.getText().toString());
                         dbhelper.updateInterestInDB(interest1);
-                    }
-                    else
-                    {
+                    } else {
                         Interest interest1 = new Interest(friendID,
                                 et_j_aid_interest1.getText().toString());
                         dbhelper.addInterestToDB(interest1);
                     }
                 }
 
-                if (!et_j_aid_interest2.getText().toString().isEmpty())
-                {
-                    if (interest_list.size() > 1)
-                    {
+                if (!et_j_aid_interest2.getText().toString().isEmpty()) {
+                    if (interest_list.size() > 1) {
                         Interest interest2 = new Interest(interest_list.get(1).getInterestID(),
                                 friendID,
                                 et_j_aid_interest2.getText().toString());
                         dbhelper.updateInterestInDB(interest2);
-                    }
-                    else
-                    {
+                    } else {
                         Interest interest2 = new Interest(friendID,
                                 et_j_aid_interest2.getText().toString());
                         dbhelper.addInterestToDB(interest2);
                     }
                 }
 
-                if (!et_j_aid_interest3.getText().toString().isEmpty())
-                {
-                    if (interest_list.size() > 2)
-                    {
+                if (!et_j_aid_interest3.getText().toString().isEmpty()) {
+                    if (interest_list.size() > 2) {
                         Interest interest3 = new Interest(interest_list.get(2).getInterestID(),
                                 friendID,
                                 et_j_aid_interest3.getText().toString());
                         dbhelper.updateInterestInDB(interest3);
-                    }
-                    else
-                    {
+                    } else {
                         Interest interest3 = new Interest(friendID,
                                 et_j_aid_interest3.getText().toString());
                         dbhelper.addInterestToDB(interest3);
                     }
                 }
-                startActivity(intent_j_mf_friendscreen);
+                //startActivity(intent_j_mf_friendscreen);
+                commMethodPrompt();
 
             }
         });
@@ -333,131 +303,123 @@ public class ManageFriendScreen extends AppCompatActivity {
     // Could not figure out how to get this to work.
     // It was just updating all of the comm methods with the last comm method entered.
     // Ran out of time to do this. This is one of the last things I worked on.
-        //    private void commMethodView()
-        //    {
-        //        ArrayList<String> comm_type_list = new ArrayList<>();
-        //        dbhelper.fillCommTypeList(comm_type_list);
-        //
-        //        AlertDialog.Builder commMethodViewBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
-        //        View view = getLayoutInflater().inflate(R.layout.custom_cell_add_comm_methods_dialog, null);
-        //
-        //        EditText et_j_acm_comm1 = view.findViewById(R.id.et_v_aid_interest1);
-        //        EditText et_j_acm_comm2 = view.findViewById(R.id.et_v_aid_interest2);
-        //        EditText et_j_acm_comm3 = view.findViewById(R.id.et_v_aid_interest3);
-        //
-        //        Spinner spn_j_acm_type1 = view.findViewById(R.id.spn_v_acm_type1);
-        //        Spinner spn_j_acm_type2 = view.findViewById(R.id.spn_v_acm_type2);
-        //        Spinner spn_j_acm_type3 = view.findViewById(R.id.spn_v_acm_type3);
-        //
-        //        ArrayAdapter<String> commTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, comm_type_list);
-        //        spn_j_acm_type1.setAdapter(commTypeAdapter);
-        //        spn_j_acm_type2.setAdapter(commTypeAdapter);
-        //        spn_j_acm_type3.setAdapter(commTypeAdapter);
-        //
-        //        commMethodViewBuilder.setTitle("Add Communication Methods");
-        //        commMethodViewBuilder.setView(view);
-        //
-        //        int friendID = passedFriend.getFriendID();
-        //        ArrayList<CommMethod> comm_method_list;
-        //        comm_method_list = dbhelper.getCommMethodsByID(friendID);
-        //
-        //        //would implement setting dropdown, but not sure how to write query and running out of time
-        //
-        //        if (comm_method_list.size() > 0)
-        //        {
-        //            et_j_acm_comm1.setText(comm_method_list.get(0).getCommMethodName());
-        //        }
-        //        else
-        //        {
-        //            et_j_acm_comm1.setText("");
-        //        }
-        //        if (comm_method_list.size() > 1)
-        //        {
-        //            et_j_acm_comm2.setText(comm_method_list.get(1).getCommMethodName());
-        //        }
-        //        else
-        //        {
-        //            et_j_acm_comm2.setText("");
-        //        }
-        //        if (comm_method_list.size() > 2)
-        //        {
-        //            et_j_acm_comm3.setText(comm_method_list.get(2).getCommMethodName());
-        //        }
-        //        else
-        //        {
-        //            et_j_acm_comm3.setText("");
-        //        }
-        //
-        //        commMethodViewBuilder.setNegativeButton("Cancel", null);
-        //        commMethodViewBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
-        //        {
-        //            @Override
-        //            public void onClick(DialogInterface dialogInterface, int i)
-        //            {
-        //
-        //                if (!et_j_acm_comm1.getText().toString().isEmpty())
-        //                {
-        //                    if (comm_method_list.size() > 0) {
-        //                        CommMethod commMethod1 = new CommMethod(comm_method_list.get(0).getCommMethodID(),
-        //                                et_j_acm_comm1.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.updateCommMethodInDB(commMethod1);
-        //                        dbhelper.updateFriendCommMethod(friendID, commMethod1);
-        //                    }
-        //                    else
-        //                    {
-        //                        CommMethod commMethod1 = new CommMethod(et_j_acm_comm1.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.addCommMethodToDB(commMethod1);
-        //                        dbhelper.addFriendCommMethod(friendID, commMethod1);
-        //                    }
-        //                }
-        //
-        //                if (!et_j_acm_comm2.getText().toString().isEmpty())
-        //                {
-        //                    if (comm_method_list.size() > 1)
-        //                    {
-        //
-        //                        CommMethod commMethod2 = new CommMethod(comm_method_list.get(1).getCommMethodID(),
-        //                                et_j_acm_comm2.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.updateCommMethodInDB(commMethod2);
-        //                        dbhelper.updateFriendCommMethod(friendID, commMethod2);
-        //                    }
-        //                    else
-        //                    {
-        //                        CommMethod commMethod2 = new CommMethod(et_j_acm_comm2.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.addCommMethodToDB(commMethod2);
-        //                        dbhelper.addFriendCommMethod(friendID, commMethod2);
-        //                    }
-        //                }
-        //
-        //                if (!et_j_acm_comm3.getText().toString().isEmpty())
-        //                {
-        //                    if (comm_method_list.size() > 2)
-        //                    {
-        //                        CommMethod commMethod3 = new CommMethod(comm_method_list.get(2).getCommMethodID(),
-        //                                et_j_acm_comm3.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.updateCommMethodInDB(commMethod3);
-        //                        dbhelper.updateFriendCommMethod(friendID, commMethod3);
-        //                    }
-        //                    else
-        //                    {
-        //                        CommMethod commMethod3 = new CommMethod(et_j_acm_comm3.getText().toString(),
-        //                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
-        //                        );
-        //                        dbhelper.addCommMethodToDB(commMethod3);
-        //                        dbhelper.addFriendCommMethod(friendID, commMethod3);
-        //                    }
-        //                }
-        //            }
-        //        });
-        //     commMethodViewBuilder.show();
+    private void commMethodView() {
+        ArrayList<String> comm_type_list = new ArrayList<>();
+        dbhelper.fillCommTypeList(comm_type_list);
+
+        AlertDialog.Builder commMethodViewBuilder = new AlertDialog.Builder(ManageFriendScreen.this);
+        View view = getLayoutInflater().inflate(R.layout.custom_cell_add_comm_methods_dialog, null);
+
+        EditText et_j_acm_comm1 = view.findViewById(R.id.et_v_aid_interest1);
+        EditText et_j_acm_comm2 = view.findViewById(R.id.et_v_aid_interest2);
+        EditText et_j_acm_comm3 = view.findViewById(R.id.et_v_aid_interest3);
+
+        Spinner spn_j_acm_type1 = view.findViewById(R.id.spn_v_acm_type1);
+        Spinner spn_j_acm_type2 = view.findViewById(R.id.spn_v_acm_type2);
+        Spinner spn_j_acm_type3 = view.findViewById(R.id.spn_v_acm_type3);
+
+        ArrayAdapter<String> commTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, comm_type_list);
+        spn_j_acm_type1.setAdapter(commTypeAdapter);
+        spn_j_acm_type2.setAdapter(commTypeAdapter);
+        spn_j_acm_type3.setAdapter(commTypeAdapter);
+
+        commMethodViewBuilder.setTitle("Add Communication Methods");
+        commMethodViewBuilder.setView(view);
+
+        int friendID = passedFriend.getFriendID();
+        ArrayList<CommMethod> comm_method_list;
+        comm_method_list = dbhelper.getCommMethodsByID(friendID);
+
+        //would implement setting dropdown, but not sure how to write query and running out of time
+
+        if (comm_method_list.size() > 0) {
+            et_j_acm_comm1.setText(comm_method_list.get(0).getCommMethodName());
+        } else {
+            et_j_acm_comm1.setText("");
+        }
+        if (comm_method_list.size() > 1) {
+            et_j_acm_comm2.setText(comm_method_list.get(1).getCommMethodName());
+        } else {
+            et_j_acm_comm2.setText("");
+        }
+        if (comm_method_list.size() > 2) {
+            et_j_acm_comm3.setText(comm_method_list.get(2).getCommMethodName());
+        } else {
+            et_j_acm_comm3.setText("");
+        }
+
+        commMethodViewBuilder.setNegativeButton("Cancel", null);
+        commMethodViewBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                if (!et_j_acm_comm1.getText().toString().isEmpty())
+                {
+                    if (comm_method_list.size() > 0)
+                    {
+                        CommMethod commMethod1 = new CommMethod(comm_method_list.get(0).getCommMethodID(),
+                                et_j_acm_comm1.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.updateCommMethodInDB(commMethod1);
+                        dbhelper.updateFriendCommMethod(friendID, commMethod1);
+                    }
+                    else
+                    {
+                        CommMethod commMethod1 = new CommMethod(et_j_acm_comm1.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type1.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.addCommMethodToDB(commMethod1);
+                        dbhelper.addFriendCommMethod(friendID, commMethod1);
+                    }
+                }
+
+                if (!et_j_acm_comm2.getText().toString().isEmpty())
+                {
+                    if (comm_method_list.size() > 1)
+                    {
+
+                        CommMethod commMethod2 = new CommMethod(comm_method_list.get(1).getCommMethodID(),
+                                et_j_acm_comm2.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.updateCommMethodInDB(commMethod2);
+                        dbhelper.updateFriendCommMethod(friendID, commMethod2);
+                    }
+                    else
+                    {
+                        CommMethod commMethod2 = new CommMethod(et_j_acm_comm2.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type2.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.addCommMethodToDB(commMethod2);
+                        dbhelper.addFriendCommMethod(friendID, commMethod2);
+                    }
+                }
+
+                if (!et_j_acm_comm3.getText().toString().isEmpty())
+                {
+                    if (comm_method_list.size() > 2)
+                    {
+                        CommMethod commMethod3 = new CommMethod(comm_method_list.get(2).getCommMethodID(),
+                                et_j_acm_comm3.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.updateCommMethodInDB(commMethod3);
+                        dbhelper.updateFriendCommMethod(friendID, commMethod3);
+                    }
+                    else
+                    {
+                        CommMethod commMethod3 = new CommMethod(et_j_acm_comm3.getText().toString(),
+                                comm_type_list.indexOf(spn_j_acm_type3.getSelectedItem().toString()) + 1
+                        );
+                        dbhelper.addCommMethodToDB(commMethod3);
+                        dbhelper.addFriendCommMethod(friendID, commMethod3);
+                    }
+                }
+
+                startActivity(intent_j_mf_friendscreen);
+            }
+        });
+        commMethodViewBuilder.show();
     }
+}
