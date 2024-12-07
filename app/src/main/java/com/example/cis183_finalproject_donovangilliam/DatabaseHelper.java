@@ -504,18 +504,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return al;
     }
 
-//    public int getCommTypeByID(int commMethodID)
-//    {
-//        int commType = 0;
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        String select = "SELECT CommTypeID FROM " + COMM_METHODS_TABLE_NAME +
-//                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
-//                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommTypeID = " +
-//                COMM_METHODS_TABLE_NAME
-//
-//        return commType;
-//    }
-
     public User getUserByUsername(String username)
     {
         SQLiteDatabase db = this.getReadableDatabase();
