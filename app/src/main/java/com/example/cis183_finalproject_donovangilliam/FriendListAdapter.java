@@ -1,7 +1,6 @@
 package com.example.cis183_finalproject_donovangilliam;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +48,13 @@ public class FriendListAdapter extends BaseAdapter
         dbhelper = new DatabaseHelper(context);
         Friend friend = friend_list.get(i);
 
-        ArrayList<String> commMethodsList = dbhelper.getCommMethodsByID(friend.getFriendID());
+        ArrayList<String> commMethodsList = dbhelper.getCommMethodNamesByID(friend.getFriendID());
+        ArrayList<String> interestsList = dbhelper.getInterestNamesByID(friend.getFriendID());
+
         // concat comm methods into a string
         String commMethods = String.join(", ", commMethodsList);
+        String interestsString = String.join(", ", interestsList);
+
 
         TextView name = view.findViewById(R.id.tv_v_cc_f_name);
         TextView email = view.findViewById(R.id.tv_v_cc_f_email);
@@ -59,6 +62,7 @@ public class FriendListAdapter extends BaseAdapter
         TextView birthday = view.findViewById(R.id.tv_v_cc_f_bday);
         TextView phone = view.findViewById(R.id.tv_v_cc_f_phonenum);
         TextView closeness = view.findViewById(R.id.tv_v_cc_f_closeness);
+        TextView interests = view.findViewById(R.id.tv_v_cc_f_interests);
         TextView comms = view.findViewById(R.id.tv_v_cc_f_comms);
 
         ImageView male = view.findViewById(R.id.iv_v_cc_male);
@@ -91,6 +95,8 @@ public class FriendListAdapter extends BaseAdapter
         phone.setText("Phone #: " + friend.getPhoneNum());
         closeness.setText("Closeness: " + friend.closenessString(friend.getClosenessLevel()));
         comms.setText("Communication: " + commMethods);
+        interests.setText("Interests: " + interestsString);
+
         if (friend.isMarked() == 1)
         {
             mark.setVisibility(View.VISIBLE);

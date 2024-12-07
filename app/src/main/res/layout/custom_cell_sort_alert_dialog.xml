@@ -18,9 +18,10 @@
         android:id="@+id/cb_v_sf_marked"
         android:layout_width="102dp"
         android:layout_height="43dp"
-        android:layout_marginTop="208dp"
+        android:layout_marginTop="176dp"
         android:text="Is Marked?"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

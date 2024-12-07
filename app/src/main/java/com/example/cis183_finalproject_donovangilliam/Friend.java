@@ -1,6 +1,8 @@
 package com.example.cis183_finalproject_donovangilliam;
 
-public class Friend
+import java.io.Serializable;
+
+public class Friend implements Serializable
 {
     private int friendID;
     private String fname;
@@ -16,12 +18,7 @@ public class Friend
     // 1 - marked
     private int isMarked;
 
-
-    public Friend()
-    {
-
-    }
-
+    // used for obtaining friend info from db
     public Friend(int friendID,
                   String fname,
                   String lname,
@@ -35,6 +32,31 @@ public class Friend
                   int isMarked)
     {
         this.friendID = friendID;
+        this.fname = fname;
+        this.lname = lname;
+        this.email = email;
+        this.gender = gender;
+        this.age = age;
+        this.birthday = birthday;
+        this.phoneNum = phoneNum;
+        this.closenessLevel = closenessLevel;
+        this.tiedUser = tiedUser;
+        this.isMarked = isMarked;
+    }
+
+    // used for adding new friends
+    public Friend(
+                  String fname,
+                  String lname,
+                  String email,
+                  int gender,
+                  int age,
+                  String birthday,
+                  String phoneNum,
+                  int closenessLevel,
+                  String tiedUser,
+                  int isMarked)
+    {
         this.fname = fname;
         this.lname = lname;
         this.email = email;

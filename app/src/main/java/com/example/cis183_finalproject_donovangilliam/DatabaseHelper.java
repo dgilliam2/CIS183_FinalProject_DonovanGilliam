@@ -12,20 +12,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "AmieO.db";
+    private static final String DATABASE_NAME = "Amie.db";
     private static final String USERS_TABLE_NAME = "Users";
     private static final String FRIENDS_TABLE_NAME = "Friendship";
     private static final String FRIEND_INTERESTS_TABLE_NAME = "FriendInterests";
-    private static final String INTERESTS_TABLE_NAME = "Interests";
     private static final String FRIEND_COMM_METHODS_TABLE_NAME = "FriendComms";
     private static final String COMM_METHODS_TABLE_NAME = "CommMethods";
     private static final String COMM_TYPES_TABLE_NAME = "CommTypes";
 
     // put version up here too so i can change it easier
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 36;
 
     public DatabaseHelper(Context c) {
         super(c, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +40,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "Age integer, " +
                 "Birthday varchar(50), " +
                 "LastLogin varchar(50));");
-
         // Gender:
         // 0 - Male
         // 1 - Female
@@ -69,19 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE " +
                 FRIEND_INTERESTS_TABLE_NAME +
-                " (FriendInterestID integer PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "InterestID integer, " +
-                "FOREIGN KEY (FriendInterestID) REFERENCES " +
-                FRIENDS_TABLE_NAME +
-                " (FriendID), " +
-                "FOREIGN KEY (InterestID) REFERENCES " +
-                INTERESTS_TABLE_NAME +
-                " (InterestID));");
-
-        db.execSQL("CREATE TABLE " +
-                INTERESTS_TABLE_NAME +
                 " (InterestID integer PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "InterestName varchar(50));");
+                "FriendID integer," +
+                "InterestName varchar(50), " +
+                "FOREIGN KEY (FriendID) REFERENCES " +
+                FRIENDS_TABLE_NAME +
+                " (FriendID));");
 
         db.execSQL("CREATE TABLE " +
                 FRIEND_COMM_METHODS_TABLE_NAME +
@@ -115,7 +105,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + USERS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIENDS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIEND_INTERESTS_TABLE_NAME + ";");
-        db.execSQL("DROP TABLE IF EXISTS " + INTERESTS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + FRIEND_COMM_METHODS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + COMM_METHODS_TABLE_NAME + ";");
         db.execSQL("DROP TABLE IF EXISTS " + COMM_TYPES_TABLE_NAME + ";");
@@ -195,20 +184,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "TiedUser, " +
                 "IsMarked) VALUES ('Larry', 'Boiud', 0, 'lbud@example.com', 20, '6/26/2004', '1-712-273-1334', 3, 'ioi59', 1);");
 
-        db.execSQL("INSERT INTO " + INTERESTS_TABLE_NAME +
-                " (InterestName) VALUES ('Music');");
-        db.execSQL("INSERT INTO " + INTERESTS_TABLE_NAME +
-                " (InterestName) VALUES ('Gaming');");
-
         db.execSQL("INSERT INTO " + FRIEND_INTERESTS_TABLE_NAME +
-                " (FriendInterestID, InterestID) VALUES (1, 1);");
+                " (InterestID, FriendID, InterestName) VALUES (1, 1, 'Music');");
         db.execSQL("INSERT INTO " + FRIEND_INTERESTS_TABLE_NAME +
-                " (FriendInterestID, InterestID) VALUES (2, 2);");
+                " (InterestID, FriendID, InterestName) VALUES (2, 2, 'Gaming');");
 
         db.execSQL("INSERT INTO " + COMM_TYPES_TABLE_NAME +
                 " (CommTypeName) VALUES ('IRC');");
-        db.execSQL("INSERT INTO " + COMM_TYPES_TABLE_NAME +
-                " (CommTypeName) VALUES ('Social Media');");
         db.execSQL("INSERT INTO " + COMM_TYPES_TABLE_NAME +
                 " (CommTypeName) VALUES ('Social Media');");
         db.execSQL("INSERT INTO " + COMM_TYPES_TABLE_NAME +
@@ -271,7 +253,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int closenessLevel = cursor.getInt(8);
                 String tiedUser = cursor.getString(9);
                 int isMarked = cursor.getInt(10);
-                Friend friend = new Friend(friendID, fname, lname, email, gender, age, birthday, phoneNum, closenessLevel,tiedUser, isMarked);
+                Friend friend = new Friend(friendID,
+                        fname,
+                        lname,
+                        email,
+                        gender,
+                        age,
+                        birthday,
+                        phoneNum,
+                        closenessLevel,
+                        tiedUser,
+                        isMarked);
                 al.add(friend);
                 cursor.moveToNext();
             }
@@ -280,50 +272,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    // return as arraylist instead of straight string so we can manipulate stuff easier later if needed
-    public ArrayList<String> getCommMethodsByID(int id) {
-        ArrayList<String> al = new ArrayList<>();
-
+    public void fillCommTypeList(ArrayList<String> al)
+    {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String select = "SELECT " + COMM_METHODS_TABLE_NAME + ".CommMethodName " +
-                "FROM " + COMM_METHODS_TABLE_NAME +
-                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
-                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommMethodID = " +
-                COMM_METHODS_TABLE_NAME + ".CommMethodID " +
-                "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + id + ";";
+        String select = "SELECT * FROM " + COMM_TYPES_TABLE_NAME + ";";
         Cursor cursor = db.rawQuery(select, null);
-
-        if (cursor != null)
-        {
+        al.clear();
+        if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                String methodName = cursor.getString(0);
-                Log.d("Name: ", methodName + id);
-                al.add(methodName);
+                String commTypeName = cursor.getString(1);
+                al.add(commTypeName);
                 cursor.moveToNext();
             }
             cursor.close();
         }
         db.close();
-
-        return al;
-    }
-
-    public Boolean findUserInDB(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
-        Cursor cursor = db.rawQuery(select, null);
-        if (cursor.moveToFirst())
-        {
-            db.close();
-            return true;
-        } else {
-            cursor.close();
-            db.close();
-            return false;
-        }
     }
 
     public boolean lastLoginThreeDaysElapsed(String username)
@@ -334,12 +299,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Date currentDate = new Date();
         String select = "SELECT LastLogin FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
         Cursor cursor = db.rawQuery(select, null);
-        if (cursor != null)
+        if (cursor != null && cursor.moveToFirst())
         {
-            cursor.moveToFirst();
             lastLoginString = cursor.getString(0);
             Log.d("Last Login: ", lastLoginString);
             // could maybe do Date lastLoginDate = format.parse(cursor.getString(0)) but might be weird idk
+            // use Calendar? found calendar after making this func
             try
             {
                 Date lastLoginDate = format.parse(lastLoginString);
@@ -374,8 +339,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void updateLastLogin(String username)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-        String currentDate = format.format(new Date());
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        String currentDate = sdf.format(new Date());
 
         ContentValues cv = new ContentValues();
         cv.put("LastLogin", currentDate);
@@ -383,27 +348,205 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int getMostRecentFriendIDForUser(String username)
-    {
-        int recentID = 0;
+    public Boolean findUserInDB(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String select = "SELECT FriendID FROM " + FRIENDS_TABLE_NAME + "WHERE TiedUser ='" + username + "'";
 
+        String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
+        Cursor cursor = db.rawQuery(select, null);
+        if (cursor.moveToFirst())
+        {
+            db.close();
+            return true;
+        } else {
+            cursor.close();
+            db.close();
+            return false;
+        }
+    }
+
+    public ArrayList<String> getInterestNamesByID(int friendID) {
+        ArrayList<String> al = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String select = "SELECT InterestName " +
+                "FROM " + FRIEND_INTERESTS_TABLE_NAME +
+                " WHERE FriendID = " + friendID + ";";
         Cursor cursor = db.rawQuery(select, null);
 
         if (cursor != null)
         {
             cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                String interestName = cursor.getString(0);
+                Log.d("Interest: ", interestName + " FriendID: " + friendID);
+                al.add(interestName);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        db.close();
+        return al;
+    }
+
+    public ArrayList<Interest> getInterestsByID(int friendID) {
+        ArrayList<Interest> al = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String select = "SELECT * " +
+                "FROM " + FRIEND_INTERESTS_TABLE_NAME +
+                " WHERE FriendID = " + friendID + ";";
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                int interestID = cursor.getInt(0);
+                int friendIdFromDB = cursor.getInt(1);
+                String interestName = cursor.getString(2);
+
+                Interest interest = new Interest(interestID, friendIdFromDB, interestName);
+                al.add(interest);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        db.close();
+        return al;
+    }
+
+    // return as arraylist instead of straight string so we can manipulate stuff easier later if needed
+    public ArrayList<String> getCommMethodNamesByID(int friendID)
+    {
+        ArrayList<String> al = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String select = "SELECT CommMethodName " +
+                "FROM " + COMM_METHODS_TABLE_NAME +
+                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
+                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommMethodID = " +
+                COMM_METHODS_TABLE_NAME + ".CommMethodID " +
+                "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + friendID + ";";
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                String methodName = cursor.getString(0);
+                al.add(methodName);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        db.close();
+
+        return al;
+    }
+
+//    public ArrayList<CommMethod> getCommMethodsByID(int friendID)
+//    {
+//        ArrayList<CommMethod> al = new ArrayList<>();
+//
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        String select = "SELECT * " +
+//                "FROM " + COMM_METHODS_TABLE_NAME +
+//                " INNER JOIN " + FRIEND_COMM_METHODS_TABLE_NAME +
+//                " ON " + FRIEND_COMM_METHODS_TABLE_NAME + ".CommMethodID = " +
+//                COMM_METHODS_TABLE_NAME + ".CommMethodID " +
+//                "WHERE " + FRIEND_COMM_METHODS_TABLE_NAME + ".FriendCommID = " + friendID + ";";
+//        Cursor cursor = db.rawQuery(select, null);
+//
+//        if (cursor != null)
+//        {
+//            cursor.moveToFirst();
+//            while (!cursor.isAfterLast()) {
+//                int commMethodID = cursor.getInt(0);
+//                String methodName = cursor.getString(1);
+//                int commTypeID = cursor.getInt(2);
+//
+//                CommMethod commMethod = new CommMethod(commMethodID, methodName, commTypeID);
+//                al.add(commMethod);
+//                cursor.moveToNext();
+//            }
+//            cursor.close();
+//        }
+//        db.close();
+//
+//        return al;
+//    }
+
+    public User getUserByUsername(String username)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        User user = new User();
+        String select = "SELECT * FROM " + USERS_TABLE_NAME + " WHERE Username = '" + username + "';";
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null && cursor.moveToFirst())
+        {
+            String fname = cursor.getString(1);
+            String lname = cursor.getString(2);
+            int age = cursor.getInt(3);
+            String birthday = cursor.getString(4);
+            String lastLogin = cursor.getString(5);
+
+            user.setUsername(username);
+            user.setFname(fname);
+            user.setLname(lname);
+            user.setAge(age);
+            user.setBirthday(birthday);
+            user.setLastlogin(lastLogin);
+
+            cursor.close();
+        }
+        return user;
+    }
+
+    public int getNumberOfFriendsForUser(String username)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int friendCount = 0;
+
+        String select = "SELECT COUNT(*) FROM " + FRIENDS_TABLE_NAME +
+                " WHERE TiedUser = '" + username + "';";
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null && cursor.moveToFirst())
+        {
+            friendCount = cursor.getInt(0);
+            cursor.close();
+        }
+
+        db.close();
+        return friendCount;
+    }
+
+    public int getMostRecentFriendIDForUser(String username)
+    {
+        int recentID = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String select = "SELECT FriendID FROM " + FRIENDS_TABLE_NAME +
+                " WHERE TiedUser = '" + username + "'" +
+                " ORDER BY FriendID DESC;";
+
+        Cursor cursor = db.rawQuery(select, null);
+
+        if (cursor != null && cursor.moveToFirst())
+        {
             recentID = cursor.getInt(0);
             cursor.close();
         }
 
         db.close();
         return recentID;
-
     }
 
-    // DATA MANIP
     public void addUserToDB(User user)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -438,15 +581,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    // only admins will be allowed to add new interests, as it would not make sense to
-    // show interests a user added for all users.
     public void addInterestToDB(Interest interest)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put("FriendID", interest.getFriendID());
         cv.put("InterestName", interest.getInterestName());
 
-        db.insert(INTERESTS_TABLE_NAME, null, cv);
+        db.insert(FRIEND_INTERESTS_TABLE_NAME, null, cv);
         db.close();
     }
 
@@ -458,6 +600,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("CommTypeID", commMethod.getCommTypeID());
 
         db.insert(COMM_METHODS_TABLE_NAME, null, cv);
+        db.close();
+    }
+
+    //this ties the chosen CommType to the added CommMethod
+    public void addFriendCommMethod(int friendID, CommMethod commMethod)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //do this to get the commMethodID, could make a new CommMethod object w/ CommMethodID when this is called over in add friend
+        //but would be jank and possibly more work
+        String selectQuery = "SELECT CommMethodID FROM " + COMM_METHODS_TABLE_NAME +
+                " WHERE CommMethodName = '" + commMethod.getCommMethodName() + "' AND CommTypeID = '" + commMethod.getCommTypeID() + "'";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst())
+        {
+            int commMethodID = cursor.getInt(0);
+
+            ContentValues cv = new ContentValues();
+            cv.put("FriendCommID", friendID);
+            cv.put("CommMethodID", commMethodID);
+
+            db.insert(FRIEND_COMM_METHODS_TABLE_NAME, null, cv);
+        }
+
+        cursor.close();
         db.close();
     }
 
@@ -501,23 +669,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cv.put("InterestName", interest.getInterestName());
 
-        db.update(INTERESTS_TABLE_NAME, cv, "InterestID = ?", new String[]{String.valueOf(interest.getInterestID())});
+        db.update(FRIEND_INTERESTS_TABLE_NAME, cv, "InterestID = ?", new String[]{String.valueOf(interest.getInterestID())});
         db.close();
     }
 
-    public void updateCommMethodInDB(int commMethodID, CommMethod updatedCommMethod)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
+//    public void updateCommMethodInDB(CommMethod commMethod)
+//    {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues cv = new ContentValues();
+//
+//        cv.put("CommMethodName", commMethod.getCommMethodName());
+//        cv.put("CommTypeID", commMethod.getCommTypeID());
+//
+//        db.update(COMM_METHODS_TABLE_NAME, cv, "CommMethodID = ?", new String[]{String.valueOf(commMethod.getCommMethodID())});
+//        db.close();
+//    }
 
-        cv.put("CommMethodName", updatedCommMethod.getCommMethodName());
-        cv.put("CommTypeID", updatedCommMethod.getCommTypeID());
 
-        db.update(COMM_METHODS_TABLE_NAME, cv, "CommMethodID = ?", new String[]{String.valueOf(commMethodID)});
-        db.close();
-    }
+//    public void updateFriendCommMethod(int friendID, CommMethod commMethod)
+//    {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues cv = new ContentValues();
+//        cv.put("CommMethodID", commMethod.getCommMethodID());
+//
+//        db.update(FRIEND_COMM_METHODS_TABLE_NAME, cv,
+//                "FriendCommID = ? AND CommMethodID = ?",
+//                new String[]{String.valueOf(friendID), String.valueOf(commMethod.getCommMethodID())});
+//        db.close();
+//    }
 
-    // this also removes all of a user's friends, and [their interests] <- add this
+    // this also removes all of a user's friends
     public void removeUserFromDB(String username)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -530,7 +711,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void removeFriendFromDB(int friendID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(FRIEND_INTERESTS_TABLE_NAME, "FriendInterestID = ?", new String[]{String.valueOf(friendID)});
+        db.delete(FRIEND_INTERESTS_TABLE_NAME, "FriendID = ?", new String[]{String.valueOf(friendID)});
         db.delete(FRIENDS_TABLE_NAME, "FriendID = ?", new String[]{String.valueOf(friendID)});
         db.close();
     }

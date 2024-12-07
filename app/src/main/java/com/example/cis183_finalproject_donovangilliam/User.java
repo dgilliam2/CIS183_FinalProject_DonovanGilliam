@@ -1,6 +1,8 @@
 package com.example.cis183_finalproject_donovangilliam;
 
-public class User
+import java.io.Serializable;
+
+public class User implements Serializable
 {
     private String username;
     private String fname;
@@ -8,6 +10,7 @@ public class User
     private int age;
     private String birthday;
     private String lastlogin;
+
 
     public User()
     {

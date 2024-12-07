@@ -13,6 +13,12 @@
         android:theme="@style/Theme.CIS183_FinalProject_DonovanGilliam"
         tools:targetApi="31">
         <activity
+            android:name=".ManageUserScreen"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterScreen"
+            android:exported="false" />
+        <activity
             android:name=".ManageFriendScreen"
             android:exported="false" />
         <activity

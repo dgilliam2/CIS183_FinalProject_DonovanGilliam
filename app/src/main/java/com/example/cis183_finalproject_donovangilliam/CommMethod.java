@@ -6,9 +6,8 @@ public class CommMethod
     private String commMethodName;
     private int commTypeID;
 
-    public CommMethod(int commMethodID, String commMethodName, int commTypeID)
+    public CommMethod(String commMethodName, int commTypeID)
     {
-        this.commMethodID = commMethodID;
         this.commMethodName = commMethodName;
         this.commTypeID = commTypeID;
     }

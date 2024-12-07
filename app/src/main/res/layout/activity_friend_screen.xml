@@ -9,6 +9,7 @@
 
     <ListView
         android:id="@+id/lv_v_fs_friendlist"
+        style="@style/Widget.AppCompat.ListView.DropDown"
         android:layout_width="296dp"
         android:layout_height="747dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,48 +23,66 @@
         android:id="@+id/btn_v_fs_addfriend"
         android:layout_width="97dp"
         android:layout_height="91dp"
+        android:backgroundTint="#2F032F"
         android:text="Add New Friend"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.806" />
+        app:layout_constraintVertical_bias="0.975" />
+
+    <Button
+        android:id="@+id/btn_v_fs_userinfo"
+        android:layout_width="97dp"
+        android:layout_height="91dp"
+        android:backgroundTint="#881788"
+        android:text="View Your Info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.035"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.198" />
 
     <Button
         android:id="@+id/btn_v_fs_sortfriend"
         android:layout_width="97dp"
         android:layout_height="91dp"
+        android:backgroundTint="#500A50"
         android:text="Sort Friends"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.539" />
+        app:layout_constraintVertical_bias="0.804" />
 
     <Button
         android:id="@+id/btn_v_fs_home"
         android:layout_width="97dp"
         android:layout_height="91dp"
+        android:backgroundTint="#A32EE3"
         android:text="Home"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.025" />
 
     <TextView
         android:id="@+id/tv_v_fs_desc"
-        android:layout_width="92dp"
-        android:layout_height="104dp"
+        android:layout_width="97dp"
+        android:layout_height="203dp"
         android:text="Tap on Friend to manage or edit. \n Hold down on Friend to delete."
         android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.266" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

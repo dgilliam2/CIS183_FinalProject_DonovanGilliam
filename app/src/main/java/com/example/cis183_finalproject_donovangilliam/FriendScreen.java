@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,7 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-
+//this was a pain in the ass
 public class FriendScreen extends AppCompatActivity
 {
     ArrayList<Friend> friend_list = new ArrayList<>();
@@ -28,6 +29,7 @@ public class FriendScreen extends AppCompatActivity
     Button btn_j_fs_addfriend;
     Button btn_j_fs_sortfriend;
     Button btn_j_fs_home;
+    Button btn_j_fs_userinfo;
 
     ListView lv_j_fs_friendlist;
 
@@ -48,11 +50,12 @@ public class FriendScreen extends AppCompatActivity
         btn_j_fs_addfriend = findViewById(R.id.btn_v_fs_addfriend);
         btn_j_fs_sortfriend = findViewById(R.id.btn_v_fs_sortfriend);
         btn_j_fs_home = findViewById(R.id.btn_v_fs_home);
+        btn_j_fs_userinfo = findViewById(R.id.btn_v_fs_userinfo);
 
 
         lv_j_fs_friendlist = findViewById(R.id.lv_v_fs_friendlist);
         lv_j_fs_friendlist.setAdapter(adapter);
-
+        adapter.notifyDataSetChanged();
 
         intent_j_fs_mainactivity = new Intent(FriendScreen.this, MainActivity.class);
         intent_j_fs_addfriend = new Intent(FriendScreen.this, AddFriendScreen.class);
@@ -61,19 +64,30 @@ public class FriendScreen extends AppCompatActivity
         //ADD CHECK TO SEE IF ACTIVITY STARTED FROM LOGIN SCREEN, ONLY PUSH NOTIFICATIONS IF COMING
         // FROM THIS SCREEN
         Intent cameFrom = getIntent();
-        Bundle infoPassed = cameFrom.getExtras();
-
         dbhelper = new DatabaseHelper(FriendScreen.this);
 
         dbhelper.fillFriendsList(Session.getLoggedInUser(), friend_list);
-        if (dbhelper.lastLoginThreeDaysElapsed(Session.getLoggedInUser()))
+
+        if (cameFrom != null)
         {
-            Session.setLoginLapseNotification(true);
-            dbhelper.updateLastLogin(Session.getLoggedInUser());
-        }
-        else
-        {
-            dbhelper.updateLastLogin(Session.getLoggedInUser());
+            String extra = cameFrom.getStringExtra("MainScreen");
+            if (extra != null && extra.equals("Main"))
+            {
+                if (dbhelper.lastLoginThreeDaysElapsed(Session.getLoggedInUser())) {
+                    loginLapseNotification();
+                    dbhelper.updateLastLogin(Session.getLoggedInUser());
+                }
+                else
+                {
+                    dbhelper.updateLastLogin(Session.getLoggedInUser());
+
+                }
+            }
+            else
+            {
+                dbhelper.updateLastLogin(Session.getLoggedInUser());
+
+            }
         }
 
         manageFriendListener();
@@ -81,6 +95,7 @@ public class FriendScreen extends AppCompatActivity
         addFriendListener();
         homeButtonListener();
         sortFriendListener();
+        userInfoListener();
     }
 
     private void manageFriendListener()
@@ -90,7 +105,9 @@ public class FriendScreen extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-
+                Friend friend = friend_list.get(i);
+                intent_j_fs_managefriend.putExtra("PassedFriend", friend);
+                startActivity(intent_j_fs_managefriend);
             }
         });
 
@@ -142,55 +159,127 @@ public class FriendScreen extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                Session.setLoggedInUser("");
                 startActivity(intent_j_fs_mainactivity);
+            }
+        });
+    }
+
+    private void userInfoListener()
+    {
+        btn_j_fs_userinfo.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                AlertDialog.Builder userInfoBuilder = new AlertDialog.Builder(FriendScreen.this);
+                userInfoBuilder.setTitle("Your Info");
+
+                View userInfo = getLayoutInflater().inflate(R.layout.custom_cell_user_info_dialog, null);
+                userInfoBuilder.setView(userInfo);
+
+                User user = dbhelper.getUserByUsername(Session.getLoggedInUser());
+                TextView tv_j_ui_username = userInfo.findViewById(R.id.tv_v_ui_username);
+                TextView tv_j_ui_name = userInfo.findViewById(R.id.tv_v_ui_name);
+                TextView tv_j_ui_age = userInfo.findViewById(R.id.tv_v_ui_age);
+                TextView tv_j_ui_bday = userInfo.findViewById(R.id.tv_v_ui_bday);
+                TextView tv_j_ui_numfriend = userInfo.findViewById(R.id.tv_v_ui_numfriend);
+
+                Button btn_j_ui_manage = userInfo.findViewById(R.id.btn_v_ui_manage);
+                Button btn_j_ui_delete = userInfo.findViewById(R.id.btn_v_ui_delete);
+
+                Intent intent_j_fs_manageuser = new Intent(FriendScreen.this, ManageUserScreen.class);
+
+                tv_j_ui_username.setText("Username: " + user.getUsername());
+                tv_j_ui_name.setText("Name: " + user.getFname() + " " +  user.getLname());
+                tv_j_ui_age.setText("Age: " + user.getAge());
+                tv_j_ui_bday.setText("Birthday: " + user.getBirthday());
+                tv_j_ui_numfriend.setText("# of Friends: " + dbhelper.getNumberOfFriendsForUser(user.getUsername()));
+
+                userInfoBuilder.setNegativeButton("Close", null);
+                userInfoBuilder.show();
+
+                btn_j_ui_manage.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        User user = dbhelper.getUserByUsername(Session.getLoggedInUser());
+                        intent_j_fs_manageuser.putExtra("PassedUser", user);
+                        startActivity(intent_j_fs_manageuser);
+                    }
+                });
+
+                btn_j_ui_delete.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        AlertDialog.Builder confirmDeleteAlert = new AlertDialog.Builder(FriendScreen.this);
+                        confirmDeleteAlert.setTitle("Delete Account?");
+                        confirmDeleteAlert.setNegativeButton("No", null);
+                        confirmDeleteAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                dbhelper.removeUserFromDB(Session.getLoggedInUser());
+                                Session.setLoggedInUser("");
+                                startActivity(intent_j_fs_mainactivity);
+                            }
+                        });
+                        confirmDeleteAlert.show();
+                    }
+                });
             }
         });
     }
 
     private void sortFriendsPopup()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(FriendScreen.this);
-        builder.setTitle("Sort Friends");
+        AlertDialog.Builder sortFriendBuilder = new AlertDialog.Builder(FriendScreen.this);
+        sortFriendBuilder.setTitle("Sort Friends");
 
-        View view = getLayoutInflater().inflate(R.layout.custom_cell_sort_alert_dialog, null);
-        builder.setView(view);
+        View sortFriends = getLayoutInflater().inflate(R.layout.custom_cell_sort_alert_dialog, null);
+        sortFriendBuilder.setView(sortFriends);
 
-        ArrayList<String> genderList = new ArrayList<>();
-        genderList.add("Male");
-        genderList.add("Female");
-        genderList.add("Other");
+        ArrayList<String> gender_list = new ArrayList<>();
+        gender_list.add("Male");
+        gender_list.add("Female");
+        gender_list.add("Other");
 
-        ArrayList<String> closenessList = new ArrayList<>();
-        closenessList.add("Not Close");
-        closenessList.add("Acquainted");
-        closenessList.add("Friend");
-        closenessList.add("Close Friend");
-        closenessList.add("Best Friend");
+        ArrayList<String> closeness_list = new ArrayList<>();
+        closeness_list.add("Not Close");
+        closeness_list.add("Acquainted");
+        closeness_list.add("Friend");
+        closeness_list.add("Close Friend");
+        closeness_list.add("Best Friend");
 
-
-        CheckBox cb_j_sf_fname = view.findViewById(R.id.cb_v_sf_fname);
-        CheckBox cb_j_sf_lname = view.findViewById(R.id.cb_v_sf_lname);
-        CheckBox cb_j_sf_gender = view.findViewById(R.id.cb_v_sf_gender);
-        CheckBox cb_j_sf_closeness = view.findViewById(R.id.cb_v_sf_closeness);
-        CheckBox cb_j_sf_marked = view.findViewById(R.id.cb_v_sf_marked);
-
-        EditText et_j_sf_fname = view.findViewById(R.id.et_v_sf_fname);
-        EditText et_j_sf_lname = view.findViewById(R.id.et_v_sf_lname);
-
-        Spinner spn_j_sf_gender = view.findViewById(R.id.spn_v_sf_gender);
-        Spinner spn_j_sf_closeness = view.findViewById(R.id.spn_v_sf_closeness);
+        ArrayList<String> comm_type_list = new ArrayList<>();
+        dbhelper.fillCommTypeList(comm_type_list);
 
 
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, gender_list);
+        ArrayAdapter<String> closenessAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, closeness_list);
+
+        CheckBox cb_j_sf_fname = sortFriends.findViewById(R.id.cb_v_sf_fname);
+        CheckBox cb_j_sf_lname = sortFriends.findViewById(R.id.cb_v_sf_lname);
+        CheckBox cb_j_sf_gender = sortFriends.findViewById(R.id.cb_v_sf_gender);
+        CheckBox cb_j_sf_closeness = sortFriends.findViewById(R.id.cb_v_sf_closeness);
+        CheckBox cb_j_sf_marked = sortFriends.findViewById(R.id.cb_v_sf_marked);
+
+        EditText et_j_sf_fname = sortFriends.findViewById(R.id.et_v_sf_fname);
+        EditText et_j_sf_lname = sortFriends.findViewById(R.id.et_v_sf_lname);
+
+        Spinner spn_j_sf_gender = sortFriends.findViewById(R.id.spn_v_sf_gender);
+        Spinner spn_j_sf_closeness = sortFriends.findViewById(R.id.spn_v_sf_closeness);
 
 
-        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, genderList);
-        ArrayAdapter<String> closenessAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, closenessList);
 
         spn_j_sf_gender.setAdapter(genderAdapter);
         spn_j_sf_closeness.setAdapter(closenessAdapter);
 
-
-        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+        sortFriendBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
@@ -212,8 +301,6 @@ public class FriendScreen extends AppCompatActivity
 
                 if (cb_j_sf_gender.isChecked())
                 {
-                    Log.d("Gender Sorting", "Selected Gender: " + spn_j_sf_gender.getSelectedItem().toString());
-                    Log.d("Gender Sorting", "Selected Gender Index: " + spn_j_sf_gender.getSelectedItemPosition());
                     sql_statement += " AND Gender = " + spn_j_sf_gender.getSelectedItemPosition();
                     concatQuery = true;
                 }
@@ -246,8 +333,18 @@ public class FriendScreen extends AppCompatActivity
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
-        AlertDialog dialog = builder.create();
+        sortFriendBuilder.setNegativeButton("Cancel", null);
+        AlertDialog dialog = sortFriendBuilder.create();
         dialog.show();
+    }
+
+    private void loginLapseNotification()
+    {
+        AlertDialog.Builder loginLapseBuilder = new AlertDialog.Builder(FriendScreen.this);
+        loginLapseBuilder.setTitle("It's been a while!");
+        loginLapseBuilder.setMessage("Hey there! It's been 3 days since you've last logged in. " +
+                "Why not talk to some of the friends you've marked?");
+        loginLapseBuilder.setNegativeButton("Sure!", null);
+        loginLapseBuilder.show();
     }
 }
