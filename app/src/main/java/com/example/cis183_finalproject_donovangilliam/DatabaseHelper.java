@@ -673,6 +673,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // Update
+
     public void updateUserInDB(User user)
     {
         SQLiteDatabase db = this.getWritableDatabase();
