@@ -197,9 +197,9 @@ public class AddFriendScreen extends AppCompatActivity
         AlertDialog.Builder interestViewBuilder = new AlertDialog.Builder(AddFriendScreen.this);
         View view = getLayoutInflater().inflate(R.layout.custom_cell_add_interests_dialog, null);
 
-        EditText et_j_aid_interest1 = view.findViewById(R.id.et_v_aid_interest1);
-        EditText et_j_aid_interest2 = view.findViewById(R.id.et_v_aid_interest2);
-        EditText et_j_aid_interest3 = view.findViewById(R.id.et_v_aid_interest3);
+        EditText et_j_aid_interest1 = view.findViewById(R.id.et_v_acm_comm1);
+        EditText et_j_aid_interest2 = view.findViewById(R.id.et_v_acm_comm2);
+        EditText et_j_aid_interest3 = view.findViewById(R.id.et_v_acm_comm3);
 
         interestViewBuilder.setTitle("Add Interests");
         interestViewBuilder.setView(view);
@@ -242,9 +242,9 @@ public class AddFriendScreen extends AppCompatActivity
         AlertDialog.Builder commMethodViewBuilder = new AlertDialog.Builder(AddFriendScreen.this);
         View view = getLayoutInflater().inflate(R.layout.custom_cell_add_comm_methods_dialog, null);
 
-        EditText et_j_acm_comm1 = view.findViewById(R.id.et_v_aid_interest1);
-        EditText et_j_acm_comm2 = view.findViewById(R.id.et_v_aid_interest2);
-        EditText et_j_acm_comm3 = view.findViewById(R.id.et_v_aid_interest3);
+        EditText et_j_acm_comm1 = view.findViewById(R.id.et_v_acm_comm1);
+        EditText et_j_acm_comm2 = view.findViewById(R.id.et_v_acm_comm2);
+        EditText et_j_acm_comm3 = view.findViewById(R.id.et_v_acm_comm3);
 
         Spinner spn_j_acm_type1 = view.findViewById(R.id.spn_v_acm_type1);
         Spinner spn_j_acm_type2 = view.findViewById(R.id.spn_v_acm_type2);
