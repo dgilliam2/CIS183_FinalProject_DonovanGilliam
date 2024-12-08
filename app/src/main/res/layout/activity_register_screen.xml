@@ -85,7 +85,7 @@
         android:layout_width="261dp"
         android:layout_height="67dp"
         android:ems="10"
-        android:hint="Last Name"
+        android:hint="First Name"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
